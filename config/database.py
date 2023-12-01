@@ -1,4 +1,0 @@
-SERVER = ''
-DATABASE = ''
-USERNAME = None
-PASSWORD = None
