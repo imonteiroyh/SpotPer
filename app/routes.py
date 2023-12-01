@@ -19,6 +19,7 @@ def playlist(playlist_code):
     if request.method == 'GET':
         response = database_queries.get_playlist(playlist_code)
         result = response['result']
+        print(result)
 
         return render_template('playlist.html', playlist=result, playlist_code=playlist_code) if result else jsonify({'error': 'Playlist not found'})
     
@@ -39,7 +40,7 @@ def playlist(playlist_code):
             'error': 'Error deleting playlist'
         }
     
-@routing.route('/playlist/<int:playlist_code>/removeTrack', methods=['DELETE'])
+@routing.route('/playlist/<int:playlist_code>removeTrack', methods=['DELETE'])
 def remove_track(playlist_code,album_code,album_media_number,track_number):
     # album_code = request.args.get('album_code')
     # album_media_number = request.args.get('album_media_number')
@@ -64,7 +65,7 @@ def remove_track(playlist_code,album_code,album_media_number,track_number):
         return response
     
 
-@routing.route('/playlist/<int:playlist_code>/addTrack', methods=['GET', 'POST'])
+@routing.route('/playlist/<int:playlist_code>addTrack', methods=['GET', 'POST'])
 def add_track(playlist_code,album_code,album_media_number,track_number):
     # album_code = request.args.get('album_code')
     # album_media_number = request.args.get('album_media_number')
@@ -110,7 +111,7 @@ def create_playlist():
     
     if request.method == 'POST':
         playlist_name = request.form.get('playlistName')
-        selected_tracks = request.form.getlist('tracks')  # Assuming 'tracks' is the name of your checkbox group
+        selected_tracks = request.form.getlist('tracks')  
 
         tracks = [tuple(map(int, track.split(','))) for track in selected_tracks]
 

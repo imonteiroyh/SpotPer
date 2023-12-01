@@ -13,19 +13,17 @@
         <table>
             <thead>
                 <tr>
-                    <th>Track Number</th>
-                    <th>Album Code</th>
-                    <th>Album Media Number</th>
-                    <!-- Adicione outras colunas conforme necessário -->
+                    <th>Album Description</th>
+                    <th>Track Description</th>
+                    <th>Track Execution Time</th>
                 </tr>
             </thead>
             <tbody>
                 {% for track in playlist %}
                     <tr>
-                        <td>{{ track.track_number }}</td>
-                        <td>{{ track.album_code }}</td>
-                        <td>{{ track.album_media_number }}</td>
-                        <!-- Adicione outras colunas conforme necessário -->
+                        <td>{{ track.album_description }}</td>
+                        <td>{{ track.track_description }}</td>
+                        <td>{{ track.track_execution_time }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -33,7 +31,7 @@
         </table>
 
         <!-- Link para remover faixa -->
-        <a href="/playlist/{{ playlist_code }}removeTrack" class="remove-link">
+        <a href="/remove_track.html" class="remove-link">
             <button type="button">Remove Track</button>
         </a>
 

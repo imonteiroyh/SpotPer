@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remove Track</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Remove Track</h1>
+
+        <form action="/playlist/{{ playlist_code }}/removeTrack" method="post">
+            <label for="albumCode">Album Code:</label>
+            <input type="text" id="albumCode" name="album_code" required>
+
+            <label for="albumMediaNumber">Album Media Number:</label>
+            <input type="text" id="albumMediaNumber" name="album_media_number" required>
+
+            <label for="trackNumber">Track Number:</label>
+            <input type="text" id="trackNumber" name="track_number" required>
+
+            <button type="submit">Remove Track</button>
+        </form>
+    </div>
+</body>
+</html>
