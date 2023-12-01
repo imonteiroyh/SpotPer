@@ -40,11 +40,12 @@ def playlist(playlist_code):
             'error': 'Error deleting playlist'
         }
     
-@routing.route('/playlist/<int:playlist_code>removeTrack', methods=['DELETE'])
+@routing.route('/playlist/<int:playlist_code>/removeTrack', methods=['DELETE'])
 def remove_track(playlist_code,album_code,album_media_number,track_number):
     # album_code = request.args.get('album_code')
     # album_media_number = request.args.get('album_media_number')
     # track_number = request.args.get('track_number')
+
 
     if request.method == 'DELETE':
         album_code = request.args.get('album_code')
@@ -65,7 +66,7 @@ def remove_track(playlist_code,album_code,album_media_number,track_number):
         return response
     
 
-@routing.route('/playlist/<int:playlist_code>addTrack', methods=['GET', 'POST'])
+@routing.route('/playlist/<int:playlist_code>/addTrack', methods=['GET', 'POST'])
 def add_track(playlist_code,album_code,album_media_number,track_number):
     # album_code = request.args.get('album_code')
     # album_media_number = request.args.get('album_media_number')
