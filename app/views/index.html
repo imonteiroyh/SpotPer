@@ -10,28 +10,20 @@
     <div class="container">
         <h1>SpotPer</h1>
 
-        <h2>Playlists:</h2>
+        <h2>Playlists criadas:</h2>
         <ul>
             {% for playlist in playlists %}
                 <li><a href="{{ url_for('routing.playlist', playlist_code=playlist.code) }}">{{ playlist.name }}</a></li>
             {% endfor %}
         </ul>
 
-        <h2>Create a New Playlist:</h2>
+        <h2>Crie uma nova playlist:</h2>
         <form action="{{ url_for('routing.create_playlist') }}" method="post">
-            <label for="playlistName">Playlist Name:</label>
+            <label for="playlistName">Nome da playlist:</label>
             <input type="text" id="playlistName" name="playlistName" required>
-
-            <h3>Choose Tracks:</h3>
-            {% for track in tracks %}
-                <div class="track">
-                    <input type="checkbox" id="track{{ track.code }}" name="tracks" value="{{ track.code }}">
-                    <label for="track{{ track.code }}">{{ track.name }}</label>
-                </div>
-            {% endfor %}
-
-            <button type="submit">Create Playlist</button>
         </form>
+
+
     </div>
 </body>
 </html>

@@ -19,9 +19,11 @@ def playlist(playlist_code):
     if request.method == 'GET':
         response = database_queries.get_playlist(playlist_code)
         result = response['result']
-        print(result)
 
-        return render_template('playlist.html', playlist=result, playlist_code=playlist_code) if result else jsonify({'error': 'Playlist not found'})
+        response2 = database_queries.get_albums()
+        result2 = response2['result']
+        return render_template('playlist.html', playlist=result, playlist_code=playlist_code, albums=result2) if result else jsonify({'error': 'Albums not found'})
+
     
     if request.method == 'DELETE':
         response = database_queries.delete_playlist(playlist_code)
@@ -48,9 +50,11 @@ def remove_track(playlist_code,album_code,album_media_number,track_number):
 
 
     if request.method == 'DELETE':
-        album_code = request.args.get('album_code')
-        album_media_number = request.args.get('album_media_number')
-        track_number = request.args.get('track_number')
+        data = request.get_json()
+
+        album_code = data.get('album_code')
+        album_media_number = data.get('album_media_number')
+        track_number = data.get('track_number')
 
         # Verifique se os parâmetros estão presentes
         if album_code is None or album_media_number is None or track_number is None:
@@ -62,8 +66,8 @@ def remove_track(playlist_code,album_code,album_media_number,track_number):
         track_number = int(track_number)
 
         # Chame a função de remoção de faixa
-        response = database_queries.remove_track(playlist_code, album_code, album_media_number, track_number)
-        return response
+        response = remove_track(playlist_code, album_code, album_media_number, track_number)
+        return jsonify(response)
     
 
 @routing.route('/playlist/<int:playlist_code>/addTrack', methods=['GET', 'POST'])
@@ -79,11 +83,12 @@ def add_track(playlist_code,album_code,album_media_number,track_number):
         result = response['result']
 
 
-        return render_template('index.html', playlist=result) if result else jsonify({'error': 'Playlist not found'})
+        return render_template('playlist.html', playlist=result) if result else jsonify({'error': 'Playlist not found'})
 
     if request.method == 'POST':
         # aí aqui o mesmo esquema do '/' de receber os dados só que agora sem playlist_name
         # list of tuples (album_code, album_media_number, track_number)
+        playlist_code = request.args.get('playlist_code')
         album_code = request.args.get('album_code')
         album_media_number = request.args.get('album_media_number')
         track_number = request.args.get('track_number')
@@ -100,6 +105,8 @@ def add_track(playlist_code,album_code,album_media_number,track_number):
         response = database_queries.populate_playlist(playlist_code, album_code,album_media_number,track_number)
 
         return response
+
+
 
     
 @routing.route('/createPlaylist', methods=['GET', 'POST'])
