@@ -43,7 +43,10 @@ def get_playlist(playlist_code):
             p.total_execution_time,
             a.description AS album_description,
             t.description AS track_description,
-            t.execution_time AS track_execution_time
+            t.execution_time AS track_execution_time,
+            t.album_code,
+            t.album_media_number,
+            t.number AS track_number
         FROM
             playlist p
         LEFT JOIN

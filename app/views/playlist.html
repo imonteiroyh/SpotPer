@@ -21,12 +21,12 @@
             </thead>
             <tbody>
                 {% for track in playlist %}
-                    <tr>
+                    <tr data-album-code="{{ track.album_code }}" data-album-media-number="{{ track.album_media_number }}" data-track-number="{{ track.track_number }}">
                         <td>{{ track.album_description }}</td>
                         <td>{{ track.track_description }}</td>
                         <td>{{ track.track_execution_time }}</td>
                         <td>
-                            <button onclick="removeTrack('{{ track.album_code }}', '{{ track.album_media_number }}', '{{ track.track_number }}')">Remover</button>
+                            <button onclick="removeTrack('{{playlist_code}}', '{{ track.album_code }}', '{{ track.album_media_number }}', '{{ track.track_number }}')">Remover</button>
                         </td>
                     </tr>
                 {% endfor %}
@@ -51,7 +51,6 @@
                         <td>{{ album.album_description }}</td>
                         <td>{{ album.track_description }}</td>
                         <td>
-                            <!-- Adicione um botão com um identificador único -->
                             <button id="addToPlaylistBtn_{{ album.album_code }}_{{ album.album_media_number }}_{{ album.track_number }}">Adicionar</button>
                         </td>
                     </tr>
@@ -59,37 +58,43 @@
             </tbody>
         </table>
 
-        <a href="{{ url_for('routing.home') }}"> <!-- Adicione esta linha -->
+        <a href="{{ url_for('routing.home') }}">
             <button type="button">Voltar para a página inicial</button>
         </a>
 
     </div>
     
     <script>
-        function removeTrack(albumCode, albumMediaNumber, trackNumber) {
-            // Criar um objeto FormData para enviar os dados
-            var formData = new FormData();
-            formData.append('album_code', albumCode);
-            formData.append('album_media_number', albumMediaNumber);
-            formData.append('track_number', trackNumber);
-    
-            // Enviar a solicitação AJAX para a rota
-            var xhr = new XMLHttpRequest();
-            xhr.open('DELETE', '/playlist/' + playlistCode + '/removeTrack', true);
-            xhr.onload = function () {
-                if (xhr.status == 200) {
-                    console.log('Track removed successfully');
-                    // Remover a linha da tabela após a remoção bem-sucedida, se desejado
-                    var row = document.querySelector(`tr[data-album-code="${albumCode}"][data-album-media-number="${albumMediaNumber}"][data-track-number="${trackNumber}"]`);
-                    row.parentNode.removeChild(row);
-                } else {
-                    console.error('Error removing track:', xhr.responseText);
-                }
+        function removeTrack(playlistCode, albumCode, albumMediaNumber, trackNumber) {
+            const data = {
+                'album_code': albumCode,
+                'album_media_number': albumMediaNumber,
+                'track_number': trackNumber
             };
-            xhr.send(formData);
+    
+            const options = {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            };
+
+            fetch('/playlist/' + playlistCode + '/removeTrack', options)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+
+                        return response.json();
+                    }
+
+                    location.reload()
+                })
+                .catch(error => {
+                    console.error('Error removing track: ', error.message)
+                })
         }
 
-        // Função para redirecionar para a rota add_track com os parâmetros adequados
         function addToPlaylist(albumCode, mediaNumber, trackNumber) {
                 window.location.href = "{{ url_for('routing.add_track', playlist_code=playlist_code) }}" + `?album_code=${albumCode}&album_media_number=${mediaNumber}&track_number=${trackNumber}`;
         }
