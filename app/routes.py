@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify, render_template, redirect, url_for
 from services import database_queries
 
 routing = Blueprint('routing', __name__)
@@ -10,7 +10,8 @@ def home():
 
     if request.method == 'GET':
         response = database_queries.get_playlists()
-        return response
+        playlists = response['result']
+        return render_template('index.html', playlists=playlists)
 
 @routing.route('/playlist/<int:playlist_code>', methods=['GET', 'DELETE'])
 def playlist(playlist_code):
@@ -19,9 +20,7 @@ def playlist(playlist_code):
         response = database_queries.get_playlist(playlist_code)
         result = response['result']
 
-        return result if result else {
-            'error': 'Playlist not found'
-        }
+        return render_template('playlist.html', playlist=result, playlist_code=playlist_code) if result else jsonify({'error': 'Playlist not found'})
     
     if request.method == 'DELETE':
         response = database_queries.delete_playlist(playlist_code)
@@ -31,7 +30,6 @@ def playlist(playlist_code):
             return {
                 'message': 'Playlist deleted'
             }
-
         elif message == 'no changes':
             return {
                 'message': 'No changes'
@@ -42,23 +40,32 @@ def playlist(playlist_code):
         }
     
 @routing.route('/playlist/<int:playlist_code>/removeTrack', methods=['DELETE'])
-def remove_track(playlist_code):
+def remove_track(playlist_code,album_code,album_media_number,track_number):
     # album_code = request.args.get('album_code')
     # album_media_number = request.args.get('album_media_number')
     # track_number = request.args.get('track_number')
 
     if request.method == 'DELETE':
-        album_code = 1
-        album_media_number = 1
-        track_number = 1
+        album_code = request.args.get('album_code')
+        album_media_number = request.args.get('album_media_number')
+        track_number = request.args.get('track_number')
 
+        # Verifique se os parâmetros estão presentes
+        if album_code is None or album_media_number is None or track_number is None:
+            return jsonify({'error': 'Missing required parameters'})
+
+        # Converta os parâmetros para inteiros se necessário
+        album_code = int(album_code)
+        album_media_number = int(album_media_number)
+        track_number = int(track_number)
+
+        # Chame a função de remoção de faixa
         response = database_queries.remove_track(playlist_code, album_code, album_media_number, track_number)
-
         return response
     
 
 @routing.route('/playlist/<int:playlist_code>/addTrack', methods=['GET', 'POST'])
-def add_track(playlist_code):
+def add_track(playlist_code,album_code,album_media_number,track_number):
     # album_code = request.args.get('album_code')
     # album_media_number = request.args.get('album_media_number')
     # track_number = request.args.get('track_number')
@@ -70,19 +77,25 @@ def add_track(playlist_code):
         result = response['result']
 
 
-        return result if result else {
-            'error': 'Playlist not found'
-        }
+        return render_template('index.html', playlist=result) if result else jsonify({'error': 'Playlist not found'})
 
     if request.method == 'POST':
         # aí aqui o mesmo esquema do '/' de receber os dados só que agora sem playlist_name
         # list of tuples (album_code, album_media_number, track_number)
-        tracks = [
-        (1, 1, 1),
-        (1, 1, 2)
-        ]
+        album_code = request.args.get('album_code')
+        album_media_number = request.args.get('album_media_number')
+        track_number = request.args.get('track_number')
 
-        response = database_queries.populate_playlist(playlist_code, tracks)
+        # Verifique se os parâmetros estão presentes
+        if album_code is None or album_media_number is None or track_number is None:
+            return jsonify({'error': 'Missing required parameters'})
+
+        # Converta os parâmetros para inteiros se necessário
+        album_code = int(album_code)
+        album_media_number = int(album_media_number)
+        track_number = int(track_number)
+
+        response = database_queries.populate_playlist(playlist_code, album_code,album_media_number,track_number)
 
         return response
 
@@ -93,21 +106,17 @@ def create_playlist():
         response = database_queries.get_albums()
         result = response['result']
 
-        return result if result else {
-            'error': 'Error getting albums'
-        }
+        return jsonify(result) if result else jsonify({'error': 'Error getting albums'})
     
     if request.method == 'POST':
-        # string
-        playlist_name = 'x' 
+        playlist_name = request.form.get('playlistName')
+        selected_tracks = request.form.getlist('tracks')  # Assuming 'tracks' is the name of your checkbox group
 
-        # list of tuples (album_code, album_media_number, track_number)
-        tracks = [
-        (1, 1, 2),
-        (2, 1, 1),
-        (3, 1, 1)
-        ]
+        tracks = [tuple(map(int, track.split(','))) for track in selected_tracks]
 
         response = database_queries.create_playlist(playlist_name, tracks)
 
-        return response
+        if response.get('error'):
+            return jsonify({'error': response['error']}), 400  # 400 Bad Request
+
+        return redirect(url_for('routing.home'))  # Redirect to the home page after creating the playlist

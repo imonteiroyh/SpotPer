@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playlist</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Playlist</h1>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Track Number</th>
+                    <th>Album Code</th>
+                    <th>Album Media Number</th>
+                    <!-- Adicione outras colunas conforme necessário -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for track in playlist %}
+                    <tr>
+                        <td>{{ track.track_number }}</td>
+                        <td>{{ track.album_code }}</td>
+                        <td>{{ track.album_media_number }}</td>
+                        <!-- Adicione outras colunas conforme necessário -->
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </table>
+
+        <!-- Link para remover faixa -->
+        <a href="/playlist/{{ playlist_code }}removeTrack" class="remove-link">
+            <button type="button">Remove Track</button>
+        </a>
+
+        <!-- Link para adicionar faixa -->
+        <a href="/playlist/{{ playlist_code }}addTrack" class="add-link">
+            <button type="button">Add Track</button>
+        </a>
+    </div>
+</body>
+</html>
