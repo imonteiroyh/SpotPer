@@ -74,6 +74,7 @@ def get_albums():
     query = '''
         SELECT
             a.code AS album_code,
+            a.media_number AS album_media_number,
             a.description AS album_description,
             t.description AS track_description,
             t.execution_time AS track_execution_time

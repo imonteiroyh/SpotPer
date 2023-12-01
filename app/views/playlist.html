@@ -16,6 +16,7 @@
                     <th>Album Description</th>
                     <th>Track Description</th>
                     <th>Track Execution Time</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -24,21 +25,74 @@
                         <td>{{ track.album_description }}</td>
                         <td>{{ track.track_description }}</td>
                         <td>{{ track.track_execution_time }}</td>
+                        <td>
+                            <button onclick="removeTrack('{{ track.album_code }}', '{{ track.album_media_number }}', '{{ track.track_number }}')">Remover</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+        </table>
+
+        <h2>Adicionar músicas à playlist:</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Album Code</th>
+                    <th>Media Number</th>
+                    <th>Album Name</th>
+                    <th>Track Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for album in albums %}
+                    <tr>
+                        <td>{{ album.album_code }}</td>
+                        <td>{{ album.album_media_number }}</td>
+                        <td>{{ album.album_description }}</td>
+                        <td>{{ album.track_description }}</td>
+                        <td>
+                            <!-- Adicione um botão com um identificador único -->
+                            <button id="addToPlaylistBtn_{{ album.album_code }}_{{ album.album_media_number }}_{{ album.track_number }}">Adicionar</button>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
-        </table>
 
-        <!-- Link para remover faixa -->
-        <a href="/remove_track.html" class="remove-link">
-            <button type="button">Remove Track</button>
+        <a href="{{ url_for('routing.home') }}"> <!-- Adicione esta linha -->
+            <button type="button">Voltar para a página inicial</button>
         </a>
 
-        <!-- Link para adicionar faixa -->
-        <a href="/playlist/{{ playlist_code }}addTrack" class="add-link">
-            <button type="button">Add Track</button>
-        </a>
     </div>
+    
+    <script>
+        function removeTrack(albumCode, albumMediaNumber, trackNumber) {
+            // Criar um objeto FormData para enviar os dados
+            var formData = new FormData();
+            formData.append('album_code', albumCode);
+            formData.append('album_media_number', albumMediaNumber);
+            formData.append('track_number', trackNumber);
+    
+            // Enviar a solicitação AJAX para a rota
+            var xhr = new XMLHttpRequest();
+            xhr.open('DELETE', '/playlist/' + playlistCode + '/removeTrack', true);
+            xhr.onload = function () {
+                if (xhr.status == 200) {
+                    console.log('Track removed successfully');
+                    // Remover a linha da tabela após a remoção bem-sucedida, se desejado
+                    var row = document.querySelector(`tr[data-album-code="${albumCode}"][data-album-media-number="${albumMediaNumber}"][data-track-number="${trackNumber}"]`);
+                    row.parentNode.removeChild(row);
+                } else {
+                    console.error('Error removing track:', xhr.responseText);
+                }
+            };
+            xhr.send(formData);
+        }
+
+        // Função para redirecionar para a rota add_track com os parâmetros adequados
+        function addToPlaylist(albumCode, mediaNumber, trackNumber) {
+                window.location.href = "{{ url_for('routing.add_track', playlist_code=playlist_code) }}" + `?album_code=${albumCode}&album_media_number=${mediaNumber}&track_number=${trackNumber}`;
+        }
+    </script>
 </body>
 </html>
