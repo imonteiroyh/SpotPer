@@ -168,7 +168,7 @@ def remove_track(playlist_code, album_code, album_media_number, track_number):
 
     return response
 
-def add_track_test(album_code, album_media_number, track_number, playlist_code):
+def add_track(album_code, album_media_number, track_number, playlist_code):
     query = '''
         INSERT INTO track_playlist(
             album_code, album_media_number, track_number, playlist_code, last_played, times_played
@@ -354,7 +354,8 @@ def get_tracks():
             COALESCE(t.description, 'N/A') AS track_description
         FROM
             album a
-        LEFT JOIN
+        JOIN
+        -- apenas albuns que possuem faixas
             track t
         ON
             a.code = t.album_code

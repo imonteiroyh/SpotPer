@@ -9,13 +9,27 @@
 <body>
     <div class="container">
 
-        <h3>Albuns acima da média de preço:</h3>
-        <ul>
-            {% for album in albums %}
-                <p>{{ album.code }} - {{ album.media_number }} - {{ album.description }} - {{ album.purchase_price }}</p>
-            {% endfor %}
-
-        </ul>
+        <h3>Álbuns acima da média de preço:</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Número de Mídia</th>
+                    <th>Descrição</th>
+                    <th>Preço de Compra</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for album in albums %}
+                    <tr>
+                        <td>{{ album.code }}</td>
+                        <td>{{ album.media_number }}</td>
+                        <td>{{ album.description }}</td>
+                        <td>{{ album.purchase_price }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
         <h3>Gravadora com maior número de playlists que possuem pelo uma faixa composta pelo compositor Dvorack:</h3>
         <ul>
@@ -39,6 +53,9 @@
             {% endfor %}   
         </ul>
 
+        <a href="{{ url_for('routing.home') }}">
+            <button type="button">Voltar para a página inicial</button>
+        </a>
 
     </div>
 </body>

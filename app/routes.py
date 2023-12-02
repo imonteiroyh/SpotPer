@@ -76,7 +76,7 @@ def add_track(playlist_code):
             return jsonify({'error': 'Missing required parameters'})
 
         # Agora você pode usar album_code, album_media_number e track_number conforme necessário.
-        response = database_queries.add_track_test(album_code, album_media_number, track_number, playlist_code)
+        response = database_queries.add_track(album_code, album_media_number, track_number, playlist_code)
 
         return jsonify(response)
 

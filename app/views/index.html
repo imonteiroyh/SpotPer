@@ -10,11 +10,12 @@
     <div class="container">
         <h1>SpotPer</h1>
 
-        <h2>Playlists criadas:</h2>
+        <h2 style="text-align: center;">Playlists criadas:</h2>
         <table>
             <thead>
                 <tr>
                     <th>Nome da Playlist</th>
+                    <th>Ação</th>
                 </tr>
             </thead>
             <tbody>
@@ -27,18 +28,19 @@
             </tbody>
         </table>
 
-        <h2>Crie uma nova playlist:</h2>
+        <h2 style="text-align: center;">Crie uma nova playlist:</h2>
         <form action="{{ url_for('routing.create_playlist') }}" method="post">
             <label for="playlistName">Nome da playlist:</label>
             <input type="text" id="playlistName" name="playlistName" required>
             
-            <!-- Adicione o botão de envio -->
-            <button type="submit">Criar Playlist</button>
+            <br>
+            <button type="submit" style="text-align: center;">Criar Playlist</button>
         
         </form>
 
     </break>
-        <div style="margin: 0 auto; text-align: center">
+        <div style="margin: 30 auto; text-align: center">
+            <h2>Acessar Consultas:</h2>
             <a href="{{ url_for('routing.get_queries') }}">
                 <button type="button">Acessar Consultas</button>
             </a>

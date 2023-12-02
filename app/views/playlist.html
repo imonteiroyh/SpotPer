@@ -13,10 +13,10 @@
         <table>
             <thead>
                 <tr>
-                    <th>Album Description</th>
-                    <th>Track Description</th>
-                    <th>Track Execution Time</th>
-                    <th>Actions</th>
+                    <th>Album</th>
+                    <th>Faixa</th>
+                    <th>Tempo de execução</th>
+                    <th>Ação</th>
                 </tr>
             </thead>
             <tbody>
@@ -37,11 +37,11 @@
         <table>
             <thead>
                 <tr>
-                    <th>Album Code </th>
-                    <th> Album Media Number </th>
-                    <th> Album Description </th>
-                    <th> Track Number </th>
-                    <th> Track Description </th>
+                    <th> Código do Album </th>
+                    <th> Número de Mídia do Álbum </th>
+                    <th> Álbum </th>
+                    <th> Número da Faixa </th>
+                    <th> Faixa </th>
                     <th> Ação </th>
                 </tr>
             </thead>
@@ -100,7 +100,13 @@
 
         
         function addToPlaylist(playlistCode, albumCode, albumMediaNumber, trackNumber) {
-            // Construa a URL com os parâmetros necessários
+
+            if (albumCode === null || albumMediaNumber === null || trackNumber === -1) {
+                alert('Não foi possível adicionar a faixa. Parâmetros inválidos.');
+                location.reload();
+                return;
+            }
+
             const data = {
                 'album_code': albumCode,
                 'album_media_number': albumMediaNumber,
@@ -127,6 +133,7 @@
                 })
                 .catch(error => {
                     console.error('Error adding track: ', error.message)
+                    alert('Não foi possível adicionar a faixa. Tente novamente.');
                 })
         }
 
