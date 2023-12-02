@@ -104,13 +104,16 @@ def populate_playlist(playlist_code, tracks, create=False):
             (?, ?, ?, ?, NULL, 0)
     '''
     
-    for track in tracks:
-        album_code, album_media_number, track_number = track
+    album_code=tracks[0]
+    album_media_number=tracks[1]
+    track_number=tracks[2]
+
+    for album_code, album_media_number, track_number in tracks:
         response = Query(query, album_code, album_media_number, track_number, playlist_code).response
 
         if response['message'] == 'no changes':
             return {
-                'error': f'Error inserting track {track} in the playlist'
+                'error': f'Error inserting track {track_number} in the playlist'
             }
     
     if create:
@@ -166,4 +169,201 @@ def remove_track(playlist_code, album_code, album_media_number, track_number):
 
     response = Query(query, playlist_code, album_code, album_media_number, track_number).response
 
+    return response
+
+def add_track_test(album_code, album_media_number, track_number, playlist_code):
+    query = '''
+        INSERT INTO track_playlist(
+            album_code, album_media_number, track_number, playlist_code, last_played, times_played
+        )
+        VALUES
+            (?, ?, ?, ?, NULL, 0)
+    '''
+
+    response = Query(query, playlist_code, album_code, album_media_number, track_number).response
+
+    return response
+
+# definindo iii. a)
+def avg_album():
+    query = '''
+        SELECT
+	        *
+        FROM
+	        album
+        WHERE
+	        purchase_price > (
+		        SELECT
+			        AVG(purchase_price)
+		        FROM
+			album
+	    )
+    '''
+    response = Query(query).response
+
+    return response
+
+#definindo iii. b)
+def label_Dvorack():
+    query = '''
+        SELECT
+	        TOP 1 record_label.name
+        FROM
+	        record_label
+        LEFT JOIN
+	        (
+		        SELECT
+			        rl.code AS record_label_code,
+			        COUNT(DISTINCT tp.playlist_code) AS number_of_playlists
+		        FROM
+			        record_label rl
+		        LEFT JOIN
+			        album a
+		        ON
+			        rl.code = a.record_label_code
+		        LEFT JOIN
+			        track t
+		        ON
+			        a.code = t.album_code AND a.media_number = t.album_media_number
+		        LEFT JOIN
+			        track_songwriter ts
+		        ON
+			        t.album_code = ts.album_code AND t.album_media_number = ts.album_media_number AND t.number = ts.track_number
+		        LEFT JOIN
+			        songwriter s
+		        ON
+			        ts.songwriter_code = s.code
+		        LEFT JOIN
+			        track_playlist tp
+		        ON
+			        t.album_code = tp.album_code AND t.album_media_number = tp.album_media_number AND t.number = tp.track_number
+		        WHERE
+			        s.name = 'Dvorack'
+		        GROUP BY
+			        rl.code
+	        ) count_playlists
+        ON
+	        record_label.code = count_playlists.record_label_code
+        ORDER BY
+	        count_playlists.number_of_playlists DESC
+    '''
+    response = Query(query).response
+
+    return response
+
+#definindo iii. c)
+def max_songwriter():
+    query = '''
+        SELECT
+	        TOP 1 songwriter.name
+        FROM
+	        songwriter
+        LEFT JOIN 
+	        (
+		        SELECT
+			        s.code AS songwriter_code,
+			        COUNT(playlist_code) AS number_of_tracks
+		        FROM
+			        songwriter s
+		        LEFT JOIN
+			        track_songwriter ts
+		        ON
+			        s.code = ts.songwriter_code
+		        LEFT JOIN
+			        track_playlist tp
+		        ON
+			        ts.album_code = tp.album_code AND ts.album_media_number = tp.album_media_number	AND ts.track_number = tp.track_number
+		        GROUP BY
+			        s.code
+	        ) count_tracks
+        ON
+	        songwriter.code = count_tracks.songwriter_code
+        ORDER BY
+	        count_tracks.number_of_tracks DESC
+    '''
+    response = Query(query).response
+
+    return response
+
+#definindo iii. d)
+def concert_barroque_playlist():
+    query = '''
+        SELECT
+	        playlist.*
+        FROM
+	        playlist
+        INNER JOIN
+        (
+	        SELECT
+		        tp.playlist_code
+	        FROM
+		        track_playlist tp
+	        WHERE NOT EXISTS (
+		        SELECT
+			        1
+		        FROM
+			        track t
+		        WHERE
+			        tp.album_code = t.album_code 
+			        AND tp.album_media_number = t.album_media_number 
+			        AND tp.track_number = t.number
+			        AND (
+			            -- SE NÃO FOR CONCERTO OU NÃO TIVER COMPOSITORES BARROCOS PASSA
+				        NOT EXISTS(
+					        SELECT	
+						        1
+					        FROM
+						        composition_type ct
+					        WHERE	
+						        t.composition_type_code = ct.code
+						        AND ct.description = 'Concerto'
+				        ) OR NOT EXISTS (
+					    SELECT
+						    1
+					    FROM
+						    track_songwriter ts
+					    LEFT JOIN
+						    songwriter s
+					    ON
+						    ts.songwriter_code = s.code
+					    LEFT JOIN
+						    musical_period mp
+					    ON
+						    s.musical_period_code = mp.code
+					    WHERE
+						    ts.album_code = t.album_code 
+						    AND ts.album_media_number = t.album_media_number 
+						    AND ts.track_number = t.number
+						    AND mp.description = 'Barroco'
+				        )
+			        )
+	        )
+        ) playlist_baroque_concert
+    ON
+	    playlist.code = playlist_baroque_concert.playlist_code
+    '''
+    response = Query(query).response
+
+    return response
+
+# resgatando faixas
+def get_tracks():
+    query = '''
+        SELECT
+            a.code AS album_code,
+            a.media_number AS album_media_number,
+            a.description AS album_description,
+            COALESCE(t.number, -1) AS track_code,
+            COALESCE(t.description, 'N/A') AS track_description
+        FROM
+            album a
+        LEFT JOIN
+            track t
+        ON
+            a.code = t.album_code
+            AND a.media_number = t.album_media_number
+    '''
+
+    response = Query(query).response
+    
     return response

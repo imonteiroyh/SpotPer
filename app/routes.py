@@ -12,6 +12,7 @@ def home():
         response = database_queries.get_playlists()
         playlists = response['result']
 
+
         return render_template('index.html', playlists=playlists)
 
 
@@ -22,10 +23,10 @@ def playlist(playlist_code):
         response = database_queries.get_playlist(playlist_code)
         playlist = response['result']
 
-        response = database_queries.get_albums()
-        albums = response['result']
+        tracks = database_queries.get_tracks()
+        print(tracks)
         
-        return render_template('playlist.html', playlist=playlist, playlist_code=playlist_code, albums=albums)
+        return render_template('playlist.html', playlist=playlist, playlist_code=playlist_code, tracks=tracks)
 
     if request.method == 'DELETE':
         response = database_queries.delete_playlist(playlist_code)
@@ -70,34 +71,24 @@ def add_track(playlist_code,album_code,album_media_number,track_number):
     # album_media_number = request.args.get('album_media_number')
     # track_number = request.args.get('track_number')
 
-    if request.method == 'GET':
-        # mostrar como se fosse no '/'
-        # aqui se quiser mostrar quais tracks já estão na playlist
-        response = database_queries.get_playlist(playlist_code)
-        result = response['result']
-
-        return render_template('playlist.html', playlist=result) if result else jsonify({'error': 'Playlist not found'})
-
     if request.method == 'POST':
         # aí aqui o mesmo esquema do '/' de receber os dados só que agora sem playlist_name
         # list of tuples (album_code, album_media_number, track_number)
-        playlist_code = request.args.get('playlist_code')
-        album_code = request.args.get('album_code')
-        album_media_number = request.args.get('album_media_number')
-        track_number = request.args.get('track_number')
+        data = request.get_json()
 
-        # Verifique se os parâmetros estão presentes
+        album_code = int(data.get('album_code'))
+        album_media_number = int(data.get('album_media_number'))
+        track_number = int(data.get('track_number'))
+
         if album_code is None or album_media_number is None or track_number is None:
             return jsonify({'error': 'Missing required parameters'})
+        
+        tracks = [album_code, album_media_number, track_number]
 
-        # Converta os parâmetros para inteiros se necessário
-        album_code = int(album_code)
-        album_media_number = int(album_media_number)
-        track_number = int(track_number)
+        #response = database_queries.populate_playlist(playlist_code, tracks)
+        response = database_queries.add_track_test(album_code, album_media_number, track_number, playlist_code)
 
-        response = database_queries.populate_playlist(playlist_code, album_code,album_media_number,track_number)
-
-        return response
+        return jsonify(response)
 
     
 @routing.route('/createPlaylist', methods=['GET', 'POST'])
@@ -120,3 +111,28 @@ def create_playlist():
             return jsonify({'error': response['error']}), 400  # 400 Bad Request
 
         return redirect(url_for('routing.home'))  # Redirect to the home page after creating the playlist
+    
+@routing.route('/get_queries', methods=['GET'])
+def get_queries():
+    # PRIMEIRO CARD DEVE SER PRA REDIRECIONAR PRA CRIAÇÃO DE PLAYLIST
+    # QUALQUER CARD CLICADO DEVE REDIRECIONAR PARA AS INFORMAÇÕES DAS FAIXAS NA PLAYLIST
+
+    if request.method == 'GET':
+        #rota iii. a)
+        response = database_queries.avg_album()
+        albums = response['result']
+
+        #rota iii. b)
+        response = database_queries.label_Dvorack()
+        label = response['result']
+
+        #rota iii. c) 
+        response = database_queries.max_songwriter()
+        songwriter = response['result']
+
+        #rota iii. d) 
+        response = database_queries.concert_barroque_playlist()
+        cb_playlist = response['result']
+
+        return render_template('queries.html', albums=albums, label=label, songwriter=songwriter, cb_playlist=cb_playlist)
+    

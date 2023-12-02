@@ -38,21 +38,14 @@
             <thead>
                 <tr>
                     <th>Album Code</th>
-                    <th>Media Number</th>
-                    <th>Album Name</th>
-                    <th>Track Name</th>
+                    <th> Album Media Number</th>
                 </tr>
             </thead>
             <tbody>
-                {% for album in albums %}
+                {% for track in tracks %}
                     <tr>
-                        <td>{{ album.album_code }}</td>
-                        <td>{{ album.album_media_number }}</td>
-                        <td>{{ album.album_description }}</td>
-                        <td>{{ album.track_description }}</td>
-                        <td>
-                            <button id="addToPlaylistBtn_{{ album.album_code }}_{{ album.album_media_number }}_{{ album.track_number }}">Adicionar</button>
-                        </td>
+                        <td>{{ track.album_code }}</td>
+                        <td>{{ track.album_media_number }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
