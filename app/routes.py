@@ -61,14 +61,11 @@ def remove_track(playlist_code):
     
 
 @routing.route('/playlist/<int:playlist_code>/addTrack', methods=['GET', 'POST'])
-def add_track(playlist_code,album_code,album_media_number,track_number):
+def add_track(playlist_code):
     # album_code = request.args.get('album_code')
     # album_media_number = request.args.get('album_media_number')
     # track_number = request.args.get('track_number')
-
     if request.method == 'POST':
-        # aí aqui o mesmo esquema do '/' de receber os dados só que agora sem playlist_name
-        # list of tuples (album_code, album_media_number, track_number)
         data = request.get_json()
 
         album_code = int(data.get('album_code'))
@@ -77,10 +74,8 @@ def add_track(playlist_code,album_code,album_media_number,track_number):
 
         if album_code is None or album_media_number is None or track_number is None:
             return jsonify({'error': 'Missing required parameters'})
-        
-        tracks = [album_code, album_media_number, track_number]
 
-        #response = database_queries.populate_playlist(playlist_code, tracks)
+        # Agora você pode usar album_code, album_media_number e track_number conforme necessário.
         response = database_queries.add_track_test(album_code, album_media_number, track_number, playlist_code)
 
         return jsonify(response)

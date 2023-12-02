@@ -54,12 +54,7 @@
                         <td>{{ track.track_number }}</td>
                         <td>{{ track.track_description }}</td>
                         <td>
-                            <form action="{{ url_for('routing.add_track', playlist_code=playlist_code) }}" method="post">
-                                <input type="hidden" name="album_code" value="{{ track.album_code }}">
-                                <input type="hidden" name="album_media_number" value="{{ track.album_media_number }}">
-                                <input type="hidden" name="track_number" value="{{ track.track_number }}">
-                                <button type="submit">Adicionar</button>
-                            </form>
+                            <button onclick="addToPlaylist('{{playlist_code}}','{{ track.album_code }}', '{{ track.album_media_number }}', '{{ track.track_number }}')">Adicionar</button>
                         </td>
                     </tr>
                 {% endfor %}
@@ -104,10 +99,35 @@
         }
 
         
-        function addToPlaylist(albumCode, mediaNumber, trackNumber) {
+        function addToPlaylist(playlistCode, albumCode, albumMediaNumber, trackNumber) {
             // Construa a URL com os parâmetros necessários
-            const url = `{{ url_for('routing.add_track', playlist_code=playlist_code) }}?album_code=${albumCode}&album_media_number=${mediaNumber}&track_number=${trackNumber}`;
-            window.location.href = url;
+            const data = {
+                'album_code': albumCode,
+                'album_media_number': albumMediaNumber,
+                'track_number': trackNumber
+            };
+    
+            const options = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            };
+
+            fetch('/playlist/' + playlistCode + '/addTrack', options)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+
+                        return response.json();
+                    }
+
+                    location.reload()
+                })
+                .catch(error => {
+                    console.error('Error adding track: ', error.message)
+                })
         }
 
     </script>

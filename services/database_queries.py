@@ -177,7 +177,7 @@ def add_track_test(album_code, album_media_number, track_number, playlist_code):
             (?, ?, ?, ?, NULL, 0)
     '''
 
-    response = Query(query, playlist_code, album_code, album_media_number, track_number).response
+    response = Query(query, album_code, album_media_number, track_number, playlist_code).response
 
     return response
 
