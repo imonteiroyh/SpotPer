@@ -104,9 +104,6 @@ def populate_playlist(playlist_code, tracks, create=False):
             (?, ?, ?, ?, NULL, 0)
     '''
     
-    album_code=tracks[0]
-    album_media_number=tracks[1]
-    track_number=tracks[2]
 
     for album_code, album_media_number, track_number in tracks:
         response = Query(query, album_code, album_media_number, track_number, playlist_code).response
@@ -353,7 +350,7 @@ def get_tracks():
             a.code AS album_code,
             a.media_number AS album_media_number,
             a.description AS album_description,
-            COALESCE(t.number, -1) AS track_code,
+            COALESCE(t.number, -1) AS track_number,
             COALESCE(t.description, 'N/A') AS track_description
         FROM
             album a

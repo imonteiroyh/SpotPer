@@ -16,6 +16,7 @@ def home():
         return render_template('index.html', playlists=playlists)
 
 
+
 @routing.route('/playlist/<int:playlist_code>', methods=['GET', 'DELETE'])
 def playlist(playlist_code):
     
@@ -23,8 +24,8 @@ def playlist(playlist_code):
         response = database_queries.get_playlist(playlist_code)
         playlist = response['result']
 
-        tracks = database_queries.get_tracks()
-        print(tracks)
+        response = database_queries.get_tracks()
+        tracks = response['result']
         
         return render_template('playlist.html', playlist=playlist, playlist_code=playlist_code, tracks=tracks)
 
@@ -33,18 +34,12 @@ def playlist(playlist_code):
         message = response['message']
 
         if message == 'success': 
-            return {
-                'message': 'Playlist deleted'
-            }
+            return jsonify({'message': 'Playlist deleted', 'reload': True})
         
         elif message == 'no changes':
-            return {
-                'message': 'No changes'
-            }
+            return jsonify({'message': 'No changes'})
     
-        return {
-            'error': 'Error deleting playlist'
-        }
+        return jsonify({'error': 'Error deleting playlist'})
     
 
 @routing.route('/playlist/<int:playlist_code>/removeTrack', methods=['DELETE'])

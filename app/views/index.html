@@ -11,23 +11,78 @@
         <h1>SpotPer</h1>
 
         <h2>Playlists criadas:</h2>
-        <ul>
-            {% for playlist in playlists %}
-                <li><a href="{{ url_for('routing.playlist', playlist_code=playlist.code) }}">{{ playlist.name }}</a></li>
-            {% endfor %}
-        </ul>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome da Playlist</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for playlist in playlists %}
+                    <tr>
+                        <td><a href="{{ url_for('routing.playlist', playlist_code=playlist.code) }}">{{ playlist.name }}</a></td>
+                        <td><a><button onclick="deletePlaylist('{{ playlist.code }}')">Excluir Playlist</button></a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
         <h2>Crie uma nova playlist:</h2>
         <form action="{{ url_for('routing.create_playlist') }}" method="post">
             <label for="playlistName">Nome da playlist:</label>
             <input type="text" id="playlistName" name="playlistName" required>
+            
+            <!-- Adicione o botão de envio -->
+            <button type="submit">Criar Playlist</button>
+        
         </form>
 
-        <a href="{{ url_for('routing.get_queries') }}">
-            <button type="button">Acessar Consultas</button>
-        </a>
-
+    </break>
+        <div style="margin: 0 auto; text-align: center">
+            <a href="{{ url_for('routing.get_queries') }}">
+                <button type="button">Acessar Consultas</button>
+            </a>
+        </div>
 
     </div>
+
+
+    <script>
+
+    function deletePlaylist(playlistCode) {
+        console.log('Playlist Code:', playlistCode);
+        if (confirm('Tem certeza de que deseja excluir esta playlist?')) {
+            const options = {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            };
+
+            fetch('/playlist/' + playlistCode, options)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.message === 'Playlist deleted') {
+                    console.log('Playlist deletada com sucesso');
+                    if (data.reload) {
+                        // Recarrega a página apenas se 'reload' for verdadeiro
+                        window.location.reload();
+                    }
+                } else {
+                    console.error('Erro ao excluir a playlist:', data.error || data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Erro na solicitação DELETE:', error.message);
+            });
+        }
+    }
+
+    </script>
 </body>
 </html>

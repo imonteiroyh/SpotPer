@@ -37,15 +37,30 @@
         <table>
             <thead>
                 <tr>
-                    <th>Album Code</th>
-                    <th> Album Media Number</th>
+                    <th>Album Code </th>
+                    <th> Album Media Number </th>
+                    <th> Album Description </th>
+                    <th> Track Number </th>
+                    <th> Track Description </th>
+                    <th> Ação </th>
                 </tr>
             </thead>
             <tbody>
                 {% for track in tracks %}
-                    <tr>
-                        <td>{{ track.album_code }}</td>
+                    <tr data-album-code="{{ track.album_code }}" data-album-media-number="{{ track.album_media_number }}" data-track-number="{{ track.track_number }}">
+                        <td>{{ track.album_code}}</td>
                         <td>{{ track.album_media_number }}</td>
+                        <td>{{ track.album_description }}</td>
+                        <td>{{ track.track_number }}</td>
+                        <td>{{ track.track_description }}</td>
+                        <td>
+                            <form action="{{ url_for('routing.add_track', playlist_code=playlist_code) }}" method="post">
+                                <input type="hidden" name="album_code" value="{{ track.album_code }}">
+                                <input type="hidden" name="album_media_number" value="{{ track.album_media_number }}">
+                                <input type="hidden" name="track_number" value="{{ track.track_number }}">
+                                <button type="submit">Adicionar</button>
+                            </form>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -88,9 +103,13 @@
                 })
         }
 
+        
         function addToPlaylist(albumCode, mediaNumber, trackNumber) {
-                window.location.href = "{{ url_for('routing.add_track', playlist_code=playlist_code) }}" + `?album_code=${albumCode}&album_media_number=${mediaNumber}&track_number=${trackNumber}`;
+            // Construa a URL com os parâmetros necessários
+            const url = `{{ url_for('routing.add_track', playlist_code=playlist_code) }}?album_code=${albumCode}&album_media_number=${mediaNumber}&track_number=${trackNumber}`;
+            window.location.href = url;
         }
+
     </script>
 </body>
 </html>
