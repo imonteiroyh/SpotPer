@@ -1,89 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SpotPer</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-</head>
-<body>
-    <div class="container">
-        <h1>SpotPer</h1>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <h2 style="text-align: center;">Playlists criadas:</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Nome da Playlist</th>
-                    <th>Ação</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for playlist in playlists %}
-                    <tr>
-                        <td><a href="{{ url_for('routing.playlist', playlist_code=playlist.code) }}">{{ playlist.name }}</a></td>
-                        <td><a><button onclick="deletePlaylist('{{ playlist.code }}')">Excluir Playlist</button></a></td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <title>SpotPer</title>
 
-        <h2 style="text-align: center;">Crie uma nova playlist:</h2>
-        <form action="{{ url_for('routing.create_playlist') }}" method="post">
-            <label for="playlistName">Nome da playlist:</label>
-            <input type="text" id="playlistName" name="playlistName" required>
-            
-            <br>
-            <button type="submit" style="text-align: center;">Criar Playlist</button>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+        <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
         
-        </form>
+        <script src="{{ url_for('static', filename='javascript/main.js') }}"></script>
+    </head>
+    <body>
+        <div class="container">
+            <h1 class="text-center mt-5 mb-4"><b>SpotPer</b></h1>
 
-    </break>
-        <div style="margin: 30 auto; text-align: center">
-            <h2>Acessar Consultas:</h2>
-            <a href="{{ url_for('routing.get_queries') }}">
-                <button type="button">Acessar Consultas</button>
-            </a>
+            <hr class="my-5">
+
+            <h2 class="text-center mb-4"><b>PLAYLISTS</b></h2>
+
+            <br>
+
+            <table class="table" style="vertical-align: middle;">
+                <thead>
+                    <tr>
+                        <th>NOME</th>
+                        <th>AÇÃO</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for playlist in playlists %}
+                        <tr>
+                            <td><a href="{{ url_for('routing.playlist', playlist_code=playlist.code) }}">{{ playlist.name }}</a></td>
+                            <td><button class="btn btn-danger" onclick="deletePlaylist('{{ playlist.code }}')">Excluir Playlist</button></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <hr class="my-5">
+            
+            <div class="text-center mb-4">
+                <h2><b>CRIAR PLAYLIST</b></h2>
+                
+                <br>
+
+                <form action="{{ url_for('routing.create_playlist') }}" method="post">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="playlistName" name="playlistName" required autocomplete="off">
+                        <label for="playlistName">NOME DA PLAYLIST</label>
+                    </div>
+                    
+                    <br>
+                    <button type="submit" class="btn btn-primary">Criar Playlist</button>
+                
+                </form>
+            </div>
+
+            <hr class="my-5">
+
+            <div class="text-center mt-5">
+                <h2><b>ACESSAR CONSULTAS</b></h2>
+
+                <br>
+
+                <a class="btn btn-info" href="{{ url_for('routing.get_queries') }}">
+                    Acessar Consultas
+                </a>
+            </div>
+
         </div>
-
-    </div>
-
-
-    <script>
-
-    function deletePlaylist(playlistCode) {
-        if (confirm('Tem certeza de que deseja excluir esta playlist?')) {
-            const options = {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-            };
-
-            fetch('/playlist/' + playlistCode, options)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.message === 'Playlist deleted') {
-                    console.log('Playlist deletada com sucesso');
-                    if (data.reload) {
-                        // Recarrega a página apenas se 'reload' for verdadeiro
-                        window.location.reload();
-                    }
-                } else {
-                    console.error('Erro ao excluir a playlist:', data.error || data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Erro na solicitação DELETE:', error.message);
-            });
-        }
-    }
-
-    </script>
-</body>
+        
+    </body>
 </html>

@@ -1,142 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Playlist</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-</head>
-<body>
-    <div class="container">
-        <h1>Playlist</h1>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Album</th>
-                    <th>Faixa</th>
-                    <th>Tempo de execução</th>
-                    <th>Ação</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for track in playlist %}
-                    <tr data-album-code="{{ track.album_code }}" data-album-media-number="{{ track.album_media_number }}" data-track-number="{{ track.track_number }}">
-                        <td>{{ track.album_description }}</td>
-                        <td>{{ track.track_description }}</td>
-                        <td>{{ track.track_execution_time }}</td>
-                        <td>
-                            <button onclick="removeTrack('{{playlist_code}}', '{{ track.album_code }}', '{{ track.album_media_number }}', '{{ track.track_number }}')">Remover</button>
-                        </td>
+        <title>Playlist</title>
+
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+        <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+
+        <script src="{{ url_for('static', filename='javascript/main.js') }}"></script>
+    </head>
+    <body>
+        <div class="container">
+            <h1 class="text-center mt-5 mb-4"><b>SpotPer</b></h1>
+
+            <hr class="my-5">
+
+            <h2 class="text-center mb-4"><b>PLAYLIST</b></h2>
+
+            <table class="table" style="vertical-align: middle;">
+                <thead>
+                    <tr>
+                        <th>ALBUM</th>
+                        <th>FAIXA</th>
+                        <th>TEMPO DE EXECUÇÃO</th>
+                        <th>AÇÃO</th>
                     </tr>
-                {% endfor %}
+                </thead>
+                <tbody>
+                    {% for track in playlist %}
+                        <tr data-album-code="{{ track.album_code }}" data-album-media-number="{{ track.album_media_number }}" data-track-number="{{ track.track_number }}">
+                            <td>{{ track.album_description }}</td>
+                            <td>{{ track.track_description }}</td>
+                            <td>{{ track.track_execution_time }}</td>
+                            <td>
+                                <button class="btn btn-danger" onclick="removeTrack('{{playlist_code}}', '{{ track.album_code }}', '{{ track.album_media_number }}', '{{ track.track_number }}')">Remover</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+            </table>
+
+            <hr class="my-5">
+
+            <h2 class="text-center mb-4"><b>ADICIONAR MÚSICAS À PLAYLIST</b></h2>
+
+            <br>
+
+            <table>
+                <thead style="text-align: middle;">
+                    <tr>
+                        <th> CÓDIGO DO ÁLBUM </th>
+                        <th> NÚMERO DE MÍDIA DO ÁLBUM </th>
+                        <th> NÚMERO DA FAIXA </th>
+                        <th> NOME DO ÁLBUM </th>
+                        <th> NOME DA FAIXA </th>
+                        <th> AÇÃO </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for track in tracks %}
+                        <tr data-album-code="{{ track.album_code }}" data-album-media-number="{{ track.album_media_number }}" data-track-number="{{ track.track_number }}">
+                            <td>{{ track.album_code}}</td>
+                            <td>{{ track.album_media_number }}</td>
+                            <td>{{ track.track_number }}</td>
+                            <td>{{ track.album_description }}</td>
+                            <td>{{ track.track_description }}</td>
+                            <td>
+                                <button class="btn btn-success" onclick="addToPlaylist('{{playlist_code}}','{{ track.album_code }}', '{{ track.album_media_number }}', '{{ track.track_number }}')">Adicionar</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
                 </tbody>
-        </table>
+            </table>
 
-        <h2>Adicionar músicas à playlist:</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th> Código do Album </th>
-                    <th> Número de Mídia do Álbum </th>
-                    <th> Álbum </th>
-                    <th> Número da Faixa </th>
-                    <th> Faixa </th>
-                    <th> Ação </th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for track in tracks %}
-                    <tr data-album-code="{{ track.album_code }}" data-album-media-number="{{ track.album_media_number }}" data-track-number="{{ track.track_number }}">
-                        <td>{{ track.album_code}}</td>
-                        <td>{{ track.album_media_number }}</td>
-                        <td>{{ track.album_description }}</td>
-                        <td>{{ track.track_number }}</td>
-                        <td>{{ track.track_description }}</td>
-                        <td>
-                            <button onclick="addToPlaylist('{{playlist_code}}','{{ track.album_code }}', '{{ track.album_media_number }}', '{{ track.track_number }}')">Adicionar</button>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+            <br>
 
-        <a href="{{ url_for('routing.home') }}">
-            <button type="button">Voltar para a página inicial</button>
-        </a>
+            <hr class="my-5">
 
-    </div>
-    
-    <script>
-        function removeTrack(playlistCode, albumCode, albumMediaNumber, trackNumber) {
-            const data = {
-                'album_code': albumCode,
-                'album_media_number': albumMediaNumber,
-                'track_number': trackNumber
-            };
-    
-            const options = {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            };
+            <div class="text-center">
+                <a class="btn btn-secondary" href="{{ url_for('routing.home') }}">
+                    Voltar para a página inicial
+                </a>
+            </div>
 
-            fetch('/playlist/' + playlistCode + '/removeTrack', options)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-
-                        return response.json();
-                    }
-
-                    location.reload()
-                })
-                .catch(error => {
-                    console.error('Error removing track: ', error.message)
-                })
-        }
-
+        </div>
         
-        function addToPlaylist(playlistCode, albumCode, albumMediaNumber, trackNumber) {
-
-            if (albumCode === null || albumMediaNumber === null || trackNumber === -1) {
-                alert('Não foi possível adicionar a faixa. Parâmetros inválidos.');
-                location.reload();
-                return;
-            }
-
-            const data = {
-                'album_code': albumCode,
-                'album_media_number': albumMediaNumber,
-                'track_number': trackNumber
-            };
-    
-            const options = {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            };
-
-            fetch('/playlist/' + playlistCode + '/addTrack', options)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-
-                        return response.json();
-                    }
-
-                    location.reload()
-                })
-                .catch(error => {
-                    console.error('Error adding track: ', error.message)
-                    alert('Não foi possível adicionar a faixa. Tente novamente.');
-                })
-        }
-
-    </script>
-</body>
+    </body>
 </html>

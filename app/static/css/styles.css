@@ -1,64 +1,25 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-}
-
 .container {
-    max-width: 600px;
+    max-width: 800px;
     margin: 50px auto;
     padding: 20px;
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-h1 {
-    text-align: center;
-}
-
-form {
-    text-align: center;
-}
-
-label {
-    display: block;
-    margin-bottom: 5px;
-}
-
-input[type="text"],
-input[type="checkbox"] {
-    margin-bottom: 10px;
-}
-
-.track-selection {
-    display: flex;
-    justify-content: space-between;
-}
-
-.track {
-    flex: 0 0 30%;
-}
-
-button {
-    padding: 10px;
-    background-color: #4caf50;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #45a049;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
 th, td {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: center;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+ul {
+    list-style-type: none;
+}
+
+ul li p {
+    font-size: 25px;
 }
