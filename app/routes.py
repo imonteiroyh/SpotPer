@@ -5,16 +5,12 @@ routing = Blueprint('routing', __name__)
 
 @routing.route('/', methods=['GET'])
 def home():
-    # PRIMEIRO CARD DEVE SER PRA REDIRECIONAR PRA CRIAÇÃO DE PLAYLIST
-    # QUALQUER CARD CLICADO DEVE REDIRECIONAR PARA AS INFORMAÇÕES DAS FAIXAS NA PLAYLIST
 
     if request.method == 'GET':
         response = database_queries.get_playlists()
         playlists = response['result']
 
-
         return render_template('index.html', playlists=playlists)
-
 
 
 @routing.route('/playlist/<int:playlist_code>', methods=['GET', 'DELETE'])
@@ -60,11 +56,9 @@ def remove_track(playlist_code):
         return jsonify(response)
     
 
-@routing.route('/playlist/<int:playlist_code>/addTrack', methods=['GET', 'POST'])
+@routing.route('/playlist/<int:playlist_code>/addTrack', methods=['POST'])
 def add_track(playlist_code):
-    # album_code = request.args.get('album_code')
-    # album_media_number = request.args.get('album_media_number')
-    # track_number = request.args.get('track_number')
+
     if request.method == 'POST':
         data = request.get_json()
 
@@ -75,7 +69,6 @@ def add_track(playlist_code):
         if album_code is None or album_media_number is None or track_number is None:
             return jsonify({'error': 'Missing required parameters'})
 
-        # Agora você pode usar album_code, album_media_number e track_number conforme necessário.
         response = database_queries.add_track(album_code, album_media_number, track_number, playlist_code)
 
         return jsonify(response)
@@ -83,12 +76,7 @@ def add_track(playlist_code):
     
 @routing.route('/createPlaylist', methods=['GET', 'POST'])
 def create_playlist():
-    if request.method == 'GET':
-        response = database_queries.get_albums()
-        result = response['result']
 
-        return jsonify(result) if result else jsonify({'error': 'Error getting albums'})
-    
     if request.method == 'POST':
         playlist_name = request.form.get('playlistName')
         selected_tracks = request.form.getlist('tracks')  
@@ -98,31 +86,31 @@ def create_playlist():
         response = database_queries.create_playlist(playlist_name, tracks)
 
         if response.get('error'):
-            return jsonify({'error': response['error']}), 400  # 400 Bad Request
+            return jsonify({'error': response['error']})
 
-        return redirect(url_for('routing.home'))  # Redirect to the home page after creating the playlist
+        return redirect(url_for('routing.home'))
     
+
 @routing.route('/get_queries', methods=['GET'])
 def get_queries():
-    # PRIMEIRO CARD DEVE SER PRA REDIRECIONAR PRA CRIAÇÃO DE PLAYLIST
-    # QUALQUER CARD CLICADO DEVE REDIRECIONAR PARA AS INFORMAÇÕES DAS FAIXAS NA PLAYLIST
 
     if request.method == 'GET':
-        #rota iii. a)
-        response = database_queries.avg_album()
+        response = database_queries.get_albums_above_average_price()
         albums = response['result']
 
-        #rota iii. b)
-        response = database_queries.label_Dvorack()
+        response = database_queries.get_label_with_most_playlists_with_dvorack()
         label = response['result']
 
-        #rota iii. c) 
-        response = database_queries.max_songwriter()
+        response = database_queries.get_songwriter_with_most_tracks_in_playlist()
         songwriter = response['result']
 
-        #rota iii. d) 
-        response = database_queries.concert_barroque_playlist()
-        cb_playlist = response['result']
+        response = database_queries.get_playlists_with_all_tracks_concert_baroque()
+        concert_baroque_playlist = response['result']
 
-        return render_template('queries.html', albums=albums, label=label, songwriter=songwriter, cb_playlist=cb_playlist)
-    
+        return render_template(
+            'queries.html',
+            albums=albums,
+            label=label,
+            songwriter=songwriter,
+            cb_playlist=concert_baroque_playlist
+            )

@@ -168,6 +168,7 @@ def remove_track(playlist_code, album_code, album_media_number, track_number):
 
     return response
 
+
 def add_track(album_code, album_media_number, track_number, playlist_code):
     query = '''
         INSERT INTO track_playlist(
@@ -181,8 +182,8 @@ def add_track(album_code, album_media_number, track_number, playlist_code):
 
     return response
 
-# definindo iii. a)
-def avg_album():
+
+def get_albums_above_average_price():
     query = '''
         SELECT
 	        *
@@ -196,12 +197,13 @@ def avg_album():
 			album
 	    )
     '''
+
     response = Query(query).response
 
     return response
 
-#definindo iii. b)
-def label_Dvorack():
+
+def get_label_with_most_playlists_with_dvorack():
     query = '''
         SELECT
 	        TOP 1 record_label.name
@@ -225,7 +227,9 @@ def label_Dvorack():
 		        LEFT JOIN
 			        track_songwriter ts
 		        ON
-			        t.album_code = ts.album_code AND t.album_media_number = ts.album_media_number AND t.number = ts.track_number
+			        t.album_code = ts.album_code
+                    AND t.album_media_number = ts.album_media_number
+                    AND t.number = ts.track_number
 		        LEFT JOIN
 			        songwriter s
 		        ON
@@ -233,7 +237,9 @@ def label_Dvorack():
 		        LEFT JOIN
 			        track_playlist tp
 		        ON
-			        t.album_code = tp.album_code AND t.album_media_number = tp.album_media_number AND t.number = tp.track_number
+			        t.album_code = tp.album_code
+                    AND t.album_media_number = tp.album_media_number
+                    AND t.number = tp.track_number
 		        WHERE
 			        s.name = 'Dvorack'
 		        GROUP BY
@@ -244,12 +250,13 @@ def label_Dvorack():
         ORDER BY
 	        count_playlists.number_of_playlists DESC
     '''
+
     response = Query(query).response
 
     return response
 
-#definindo iii. c)
-def max_songwriter():
+
+def get_songwriter_with_most_tracks_in_playlist():
     query = '''
         SELECT
 	        TOP 1 songwriter.name
@@ -269,7 +276,9 @@ def max_songwriter():
 		        LEFT JOIN
 			        track_playlist tp
 		        ON
-			        ts.album_code = tp.album_code AND ts.album_media_number = tp.album_media_number	AND ts.track_number = tp.track_number
+			        ts.album_code = tp.album_code
+                    AND ts.album_media_number = tp.album_media_number
+                    AND ts.track_number = tp.track_number
 		        GROUP BY
 			        s.code
 	        ) count_tracks
@@ -278,12 +287,13 @@ def max_songwriter():
         ORDER BY
 	        count_tracks.number_of_tracks DESC
     '''
+
     response = Query(query).response
 
     return response
 
-#definindo iii. d)
-def concert_barroque_playlist():
+
+def get_playlists_with_all_tracks_concert_baroque():
     query = '''
         SELECT
 	        playlist.*
@@ -339,11 +349,12 @@ def concert_barroque_playlist():
     ON
 	    playlist.code = playlist_baroque_concert.playlist_code
     '''
+
     response = Query(query).response
 
     return response
 
-# resgatando faixas
+
 def get_tracks():
     query = '''
         SELECT
