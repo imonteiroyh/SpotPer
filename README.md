@@ -5,9 +5,12 @@ SpotPer is a music, album and playlist manager created using SQL Server and Pyth
 # Installation
 
 Clone the repository.
-Install the dependencies from the requirements.txt file
-Configure the SQL Server database
-Run the app.py file
+
+Install the dependencies from the requirements.txt file.
+
+Configure the SQL Server database.
+
+Run the app.py file.
 
 # Use
 
